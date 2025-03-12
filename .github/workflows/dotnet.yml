@@ -8,46 +8,62 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
+
     - name: Restore dependencies
       run: dotnet restore
-      working-directory: ./MiddlewareAutorizacion
+      working-directory: MiddlewareAutorizacion
+
     - name: Build
       run: dotnet build --no-restore
-      working-directory: ./MiddlewareAutorizacion
-    - name: Pack      
-      run: dotnet pack
-      working-directory: ./MiddlewareAutorizacion
-      
-    - uses: actions/upload-artifact@v4
+      working-directory: MiddlewareAutorizacion
+
+    - name: Pack
+      run: dotnet pack --configuration Release --output ./artifacts
+      working-directory: MiddlewareAutorizacion
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
       with:
         name: Autorizacion.Middleware
+        path: MiddlewareAutorizacion/artifacts/*.nupkg
         if-no-files-found: error
         retention-days: 7
-        path: /home/runner/work/Paquetes/AutorizacionMiddleware/*/*/*/*.nupkg
 
   release:
-    runs-on: ubuntu-latest    
+    runs-on: ubuntu-latest
     needs: build
-    steps:  
-    - name: Checkout 
-      uses: actions/checkout@v3
-    
-    - name: Downlod Artifacts 
+
+    steps:
+    - name: Download Artifact
       uses: actions/download-artifact@v4
-    
+      with:
+        name: Autorizacion.Middleware
+        path: ./artifacts
+
     - name: List Files
-      run: ls -R
-      
-    - name: Prep packages
-      run: dotnet nuget add source --username dmora233 --password ${{ secrets.PAQUETES_TOKEN }} --store-password-in-clear-text --name Paquetes "https://nuget.pkg.github.com/dmora233/index.json"
-    - name: Push package to GitHub packages 
-      run: dotnet nuget push Autorizacion.Middleware/*/*/*/*.nupkg --api-key ${{ secrets.PAQUETES_TOKEN }}  --source "Paquetes" --skip-duplicate
+      run: ls -R ./artifacts
+
+    - name: Add GitHub Packages Source
+      run: |
+        dotnet nuget add source \
+          --username dmora233 \
+          --password ${{ secrets.PAQUETES_TOKEN }} \
+          --store-password-in-clear-text \
+          --name GitHub \
+          "https://nuget.pkg.github.com/dmora233/index.json"
+
+    - name: Push Package to GitHub Packages
+      run: |
+        dotnet nuget push ./artifacts/*.nupkg \
+          --api-key ${{ secrets.PAQUETES_TOKEN }} \
+          --source "GitHub" \
+          --skip-duplicate
