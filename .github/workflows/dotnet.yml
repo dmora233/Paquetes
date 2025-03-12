@@ -1,5 +1,3 @@
-# Workflow para construir y publicar un paquete .NET
-
 name: .NET
 
 on:
@@ -20,14 +18,17 @@ jobs:
       with:
         dotnet-version: 8.0.x
 
-    - name: Restore dependencies
-      run: dotnet restore Seguridad.MiddlewareAutorizacion/Seguridad.MiddlewareAutorizacion.sln
+    - name: List project files (debugging)
+      run: ls -R 
 
+    - name: Restore dependencies
+      run: dotnet restore AutorizacionMiddleware/AutorizacionMiddleware.sln
+      
     - name: Build
-      run: dotnet build --configuration Release --no-restore Seguridad.MiddlewareAutorizacion/Seguridad.MiddlewareAutorizacion.sln
+      run: dotnet build --configuration Release --no-restore AutorizacionMiddleware/AutorizacionMiddleware.sln
 
     - name: Pack
-      run: dotnet pack --configuration Release --output ./artifacts Seguridad.MiddlewareAutorizacion/Seguridad.MiddlewareAutorizacion.sln
+      run: dotnet pack --configuration Release --output ./artifacts AutorizacionMiddleware/AutorizacionMiddleware.sln
 
     - uses: actions/upload-artifact@v4
       with:
