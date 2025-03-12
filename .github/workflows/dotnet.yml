@@ -56,5 +56,8 @@ jobs:
     - name: Prep packages
       run: dotnet nuget add source --username dmora233 --password ${{ secrets.PAQUETES_TOKEN }} --store-password-in-clear-text --name paquetes-sc701 "https://nuget.pkg.github.com/dmora233/index.json"
 
+    - name: Verify NuGet Source
+      run: dotnet nuget list source
+
     - name: Push package to GitHub packages 
       run: dotnet nuget push ./artifacts/*.nupkg --api-key ${{ secrets.PAQUETES_TOKEN }}  --source "paquetes-sc701" --skip-duplicate
