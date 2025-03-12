@@ -22,16 +22,13 @@ jobs:
         dotnet-version: 8.0.x
 
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore AutorizacionMiddleware/AutorizacionMiddleware.sln
 
     - name: Build
-      run: dotnet build --configuration Release --no-restore
-
-    - name: Verify Build Output
-      run: ls -R AutorizacionMiddleware/bin/Release/net8.0 || echo "Build output not found!"
+      run: dotnet build --configuration Release --no-restore AutorizacionMiddleware/AutorizacionMiddleware.sln
 
     - name: Pack
-      run: dotnet pack --configuration Release --output ./artifacts
+      run: dotnet pack --configuration Release --output ./artifacts AutorizacionMiddleware/AutorizacionMiddleware.sln
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
@@ -40,33 +37,3 @@ jobs:
         path: artifacts/*.nupkg
         if-no-files-found: error
         retention-days: 7
-
-  release:
-    runs-on: ubuntu-latest
-    needs: build
-
-    steps:
-    - name: Download Artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: AutorizacionMiddleware
-        path: ./artifacts
-
-    - name: List Files
-      run: ls -R ./artifacts
-
-    - name: Add GitHub Packages Source
-      run: |
-        dotnet nuget add source \
-          --username dmora233 \
-          --password ${{ secrets.PAQUETES_TOKEN }} \
-          --store-password-in-clear-text \
-          --name GitHub \
-          "https://nuget.pkg.github.com/dmora233/index.json"
-
-    - name: Push Package to GitHub Packages
-      run: |
-        dotnet nuget push ./artifacts/*.nupkg \
-          --api-key ${{ secrets.PAQUETES_TOKEN }} \
-          --source "GitHub" \
-          --skip-duplicate
