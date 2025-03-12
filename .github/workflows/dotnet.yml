@@ -23,21 +23,21 @@ jobs:
 
     - name: Restore dependencies
       run: dotnet restore
-      working-directory: AutorizacionMiddleware
+      working-directory: Paquetes/AutorizacionMiddleware
 
     - name: Build
       run: dotnet build --no-restore
-      working-directory: AutorizacionMiddleware
+      working-directory: Paquetes/AutorizacionMiddleware
 
     - name: Pack
       run: dotnet pack --configuration Release --output ./artifacts
-      working-directory: AutorizacionMiddleware
+      working-directory: Paquetes/AutorizacionMiddleware
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
         name: AutorizacionMiddleware
-        path: AutorizacionMiddleware/artifacts/*.nupkg
+        path: Paquetes/AutorizacionMiddleware/artifacts/*.nupkg
         if-no-files-found: error
         retention-days: 7
 
