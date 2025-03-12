@@ -13,6 +13,9 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: List Repository Structure
+      run: ls -R
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
@@ -20,21 +23,21 @@ jobs:
 
     - name: Restore dependencies
       run: dotnet restore
-      working-directory: MiddlewareAutorizacion
+      working-directory: Autorizacion.Middleware
 
     - name: Build
       run: dotnet build --no-restore
-      working-directory: MiddlewareAutorizacion
+      working-directory: Autorizacion.Middleware
 
     - name: Pack
       run: dotnet pack --configuration Release --output ./artifacts
-      working-directory: MiddlewareAutorizacion
+      working-directory: Autorizacion.Middleware
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
         name: Autorizacion.Middleware
-        path: MiddlewareAutorizacion/artifacts/*.nupkg
+        path: Autorizacion.Middleware/artifacts/*.nupkg
         if-no-files-found: error
         retention-days: 7
 
