@@ -13,9 +13,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Print Current Directory
-      run: pwd
-
     - name: List Repository Structure
       run: ls -R
 
@@ -26,21 +23,21 @@ jobs:
 
     - name: Restore dependencies
       run: dotnet restore
-      working-directory: ./AutorizacionMiddleware
 
     - name: Build
-      run: dotnet build --no-restore
-      working-directory: ./AutorizacionMiddleware
+      run: dotnet build --configuration Release --no-restore
+
+    - name: Verify Build Output
+      run: ls -R AutorizacionMiddleware/bin/Release/net8.0 || echo "Build output not found!"
 
     - name: Pack
       run: dotnet pack --configuration Release --output ./artifacts
-      working-directory: ./AutorizacionMiddleware
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
         name: AutorizacionMiddleware
-        path: AutorizacionMiddleware/artifacts/*.nupkg
+        path: artifacts/*.nupkg
         if-no-files-found: error
         retention-days: 7
 
